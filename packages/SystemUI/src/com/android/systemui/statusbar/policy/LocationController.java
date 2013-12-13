@@ -69,7 +69,7 @@ public class LocationController extends BroadcastReceiver {
          * @param locationEnabled A value of true indicates that at least one type of location
          *                        is enabled in settings.
          */
-        public void onLocationSettingsChanged(boolean locationEnabled);
+        public void onLocationSettingsChanged(boolean locationEnabled, int mode);
     }
 
     public LocationController(Context context) {
@@ -136,6 +136,16 @@ public class LocationController extends BroadcastReceiver {
     }
 
     /**
+     * Change the location mode in settings.
+     */
+    public void changeLocationMode(int mode) {
+        int currentUserId = ActivityManager.getCurrentUser();
+        final ContentResolver cr = mContext.getContentResolver();
+        Settings.Secure
+                .putIntForUser(cr, Settings.Secure.LOCATION_MODE, mode, currentUserId);
+    }
+
+    /**
      * Returns true if location isn't disabled in settings.
      */
     public boolean isLocationEnabled() {
@@ -145,6 +155,18 @@ public class LocationController extends BroadcastReceiver {
         int mode = Settings.Secure.getIntForUser(resolver, Settings.Secure.LOCATION_MODE,
                 Settings.Secure.LOCATION_MODE_OFF, ActivityManager.getCurrentUser());
         return mode != Settings.Secure.LOCATION_MODE_OFF;
+    }
+
+    /**
+     * Returns the current location mode
+     */
+    public int getLocationMode() {
+        ContentResolver resolver = mContext.getContentResolver();
+        // QuickSettings always runs as the owner, so specifically retrieve the settings
+        // for the current foreground user.
+        int mode = Settings.Secure.getIntForUser(resolver, Settings.Secure.LOCATION_MODE,
+                Settings.Secure.LOCATION_MODE_OFF, ActivityManager.getCurrentUser());
+        return mode;
     }
 
     /**
@@ -209,8 +231,9 @@ public class LocationController extends BroadcastReceiver {
 
     private void locationSettingsChanged() {
         boolean isEnabled = isLocationEnabled();
+        int mode = getLocationMode();
         for (LocationSettingsChangeCallback cb : mSettingsChangeCallbacks) {
-            cb.onLocationSettingsChanged(isEnabled);
+            cb.onLocationSettingsChanged(isEnabled, mode);
         }
     }
 

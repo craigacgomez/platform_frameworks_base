@@ -507,4 +507,9 @@
          linebreak to position it correctly.  [CHAR LIMIT=45] -->
     <string name="ssl_ca_cert_warning">Network may\nbe monitored</string>
 
+    <!-- ThunderKat strings -->
+    <string name="quick_settings_location_label_high_accuracy">High Accuracy</string>
+    <string name="quick_settings_location_label_sensors_only">Sensors Only</string>
+    <string name="quick_settings_location_label_battery_saving">Battery Saving</string>
+
 </resources>

@@ -67,6 +67,9 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         String label;
         boolean enabled = false;
     }
+    static class LocationState extends State {
+        int mode;
+    }
     static class BatteryState extends State {
         int batteryLevel;
         boolean pluggedIn;
@@ -273,7 +276,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
 
     private QuickSettingsTileView mLocationTile;
     private RefreshCallback mLocationCallback;
-    private State mLocationState = new State();
+    private LocationState mLocationState = new LocationState();
 
     private QuickSettingsTileView mImeTile;
     private RefreshCallback mImeCallback = null;
@@ -622,20 +625,28 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
 
     void refreshLocationTile() {
         if (mLocationTile != null) {
-            onLocationSettingsChanged(mLocationState.enabled);
+            onLocationSettingsChanged(mLocationState.enabled, mLocationState.mode);
         }
     }
 
     @Override
-    public void onLocationSettingsChanged(boolean locationEnabled) {
+    public void onLocationSettingsChanged(boolean locationEnabled, int mode) {
         int textResId = locationEnabled ? R.string.quick_settings_location_label
                 : R.string.quick_settings_location_off_label;
+        if (mode == Settings.Secure.LOCATION_MODE_HIGH_ACCURACY) {
+            textResId = R.string.quick_settings_location_label_high_accuracy;
+        } else if (mode == Settings.Secure.LOCATION_MODE_SENSORS_ONLY) {
+            textResId = R.string.quick_settings_location_label_sensors_only;
+        } else if (mode == Settings.Secure.LOCATION_MODE_BATTERY_SAVING) {
+            textResId = R.string.quick_settings_location_label_battery_saving;
+        }
         String label = mContext.getText(textResId).toString();
         int locationIconId = locationEnabled
                 ? R.drawable.ic_qs_location_on : R.drawable.ic_qs_location_off;
         mLocationState.enabled = locationEnabled;
         mLocationState.label = label;
         mLocationState.iconId = locationIconId;
+        mLocationState.mode = mode;
         mLocationCallback.refreshView(mLocationTile, mLocationState);
     }
 
