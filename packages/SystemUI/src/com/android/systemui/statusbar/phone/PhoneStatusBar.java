@@ -361,6 +361,17 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode {
         }
     }
 
+    /*
+     * Gets the navigation bar position set by the user
+     * 0 = Default (centre)
+     * 1 = Left
+     * 2 = Right
+     */
+    private int getNavigationBarPosition(Context context) {
+        return Settings.Global.getInt(context.getContentResolver(),
+                    Settings.Global.NAV_BAR_POSITION, 0);
+    }
+
     // ================================================================================
     // Constructing the view
     // ================================================================================
@@ -431,8 +442,18 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode {
             boolean showNav = mWindowManagerService.hasNavigationBar();
             if (DEBUG) Log.v(TAG, "hasNavigationBar=" + showNav);
             if (showNav) {
-                mNavigationBarView =
-                    (NavigationBarView) View.inflate(context, R.layout.navigation_bar, null);
+                mNavigationBarView = null;
+                // Appropriately position the navigation bar view based on the user's selected navigation bar position
+                if(getNavigationBarPosition(context) == 1) {
+                    mNavigationBarView =
+                        (NavigationBarView) View.inflate(context, R.layout.navigation_bar_left, null);
+                } else if(getNavigationBarPosition(context) == 2) {
+                    mNavigationBarView =
+                        (NavigationBarView) View.inflate(context, R.layout.navigation_bar_right, null);
+                } else {
+                    mNavigationBarView =
+                        (NavigationBarView) View.inflate(context, R.layout.navigation_bar, null);
+                }
 
                 mNavigationBarView.setDisabledFlags(mDisabled);
                 mNavigationBarView.setBar(this);
