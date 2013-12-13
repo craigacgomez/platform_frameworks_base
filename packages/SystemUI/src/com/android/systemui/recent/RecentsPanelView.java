@@ -60,12 +60,15 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.systemui.R;
 import com.android.systemui.statusbar.BaseStatusBar;
 import com.android.systemui.statusbar.StatusBarPanel;
 import com.android.systemui.statusbar.phone.PhoneStatusBar;
 
+import java.io.OutputStreamWriter;
+import java.lang.Runtime;
 import java.util.ArrayList;
 
 public class RecentsPanelView extends FrameLayout implements OnItemClickListener, RecentsCallback,
@@ -92,6 +95,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     private boolean mFitThumbnailToXY;
     private int mRecentItemLayoutId;
     private boolean mHighEndGfx;
+    private ImageView mClearRecents;
 
     public static interface RecentsScrollView {
         public int numItemsInOneScreenful();
@@ -340,6 +344,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
                     && (mRecentTaskDescriptions.size() == 0);
             mRecentsNoApps.setAlpha(1f);
             mRecentsNoApps.setVisibility(noApps ? View.VISIBLE : View.INVISIBLE);
+            mClearRecents.setVisibility(noApps ? View.GONE : View.VISIBLE);
 
             onAnimationEnd(null);
             setFocusable(true);
@@ -446,6 +451,42 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
 
         mRecentsScrim = findViewById(R.id.recents_bg_protect);
         mRecentsNoApps = findViewById(R.id.recents_no_apps);
+
+        mClearRecents = (ImageView) findViewById(R.id.recents_clear);
+        if (mClearRecents != null) {
+            mClearRecents.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ((ViewGroup) mRecentsContainer).removeAllViewsInLayout();
+                }
+            });
+            mClearRecents.setOnLongClickListener(new OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    ((ViewGroup) mRecentsContainer).removeAllViewsInLayout();
+                    try {
+                        ProcessBuilder pb = new ProcessBuilder("su", "-c", "/system/bin/sh");
+                        Process p = pb.start();
+                        OutputStreamWriter osw = new OutputStreamWriter(p.getOutputStream());
+                        osw.write("sync" + "\n" + "echo 3 > /proc/sys/vm/drop_caches" + "\n");
+                        osw.write("exit\n");
+                        osw.flush();
+                        osw.close();
+                        int rc = p.waitFor();
+                        if (rc != 0) {
+                            Log.e(TAG, "Flush caches failed!");
+                            Toast.makeText(mContext, "Flush caches failed", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(mContext, "VM caches flushed", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "Flush caches failed!", e);
+                        Toast.makeText(mContext, "Flush caches failed", Toast.LENGTH_SHORT).show();
+                    }
+                    return true;
+                }
+            });
+        }
 
         if (mRecentsScrim != null) {
             mHighEndGfx = ActivityManager.isHighEndGfx();
