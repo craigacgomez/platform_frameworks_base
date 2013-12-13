@@ -2464,6 +2464,12 @@ public final class Settings {
         public static final String STATUS_BAR_BATTERY_PERCENT = "status_bar_battery_percent";
 
         /**
+         * Expanded desktop on/off state
+         * @hide
+         */
+        public static final String EXPANDED_DESKTOP_STATE = "expanded_desktop_state";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
