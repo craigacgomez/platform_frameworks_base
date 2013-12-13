@@ -2416,6 +2416,12 @@ public final class Settings {
         public static final String EGG_MODE = "egg_mode";
 
         /**
+         * Whether to display display battery percent within the status bar battery icon.
+         * @hide
+         */
+        public static final String STATUS_BAR_BATTERY_PERCENT = "status_bar_battery_percent";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *

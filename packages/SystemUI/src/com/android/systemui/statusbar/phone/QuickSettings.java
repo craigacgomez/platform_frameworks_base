@@ -62,6 +62,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.internal.app.MediaRouteDialogPresenter;
+import com.android.systemui.BatteryMeterView;
 import com.android.systemui.R;
 import com.android.systemui.statusbar.phone.QuickSettingsModel.ActivityState;
 import com.android.systemui.statusbar.phone.QuickSettingsModel.BluetoothState;
@@ -109,6 +110,8 @@ class QuickSettings {
     boolean mUseDefaultAvatar = false;
 
     private Handler mHandler;
+
+    private BatteryMeterView mBattery;
 
     // The set of QuickSettingsTiles that have dynamic spans (and need to be updated on
     // configuration change)
@@ -297,6 +300,14 @@ class QuickSettings {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         mContext.startActivityAsUser(intent, new UserHandle(UserHandle.USER_CURRENT));
         collapsePanels();
+    }
+
+    public void updateBattery() {
+        if (mBattery == null || mModel == null) {
+            return;
+        }
+        mBattery.updateSettings();
+        mModel.refreshBatteryTile();
     }
 
     private void addUserTiles(ViewGroup parent, LayoutInflater inflater) {
@@ -508,6 +519,8 @@ class QuickSettings {
         final QuickSettingsTileView batteryTile = (QuickSettingsTileView)
                 inflater.inflate(R.layout.quick_settings_tile, parent, false);
         batteryTile.setContent(R.layout.quick_settings_tile_battery, inflater);
+        mBattery = (BatteryMeterView) batteryTile.findViewById(R.id.image);
+        updateBattery();
         batteryTile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
