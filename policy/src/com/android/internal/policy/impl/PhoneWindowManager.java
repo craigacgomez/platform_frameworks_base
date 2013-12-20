@@ -5160,6 +5160,17 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             mClearedBecauseOfForceShow = false;
         }
 
+        // The window which requested navbar force showing disappeared and next window wants
+        // to hide navbar. Instead of hiding we will make it transient. SystemUI will take care
+        // about hiding after timeout. This should not happen if next window is keyguard because
+        // transient state have more priority than translucent (why?) and cause bad UX
+        if (wasCleared && !mClearedBecauseOfForceShow
+                && (tmpVisibility & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) != 0) {
+            mNavigationBarController.showTransient();
+            tmpVisibility |= View.NAVIGATION_BAR_TRANSIENT;
+            mWindowManagerFuncs.addSystemUIVisibilityFlag(View.NAVIGATION_BAR_TRANSIENT);
+        }
+
         int visibility = updateSystemBarsLw(win, mLastSystemUiFlags, tmpVisibility);
         final int diff = visibility ^ mLastSystemUiFlags;
         final boolean needsMenu = win.getNeedsMenuLw(mTopFullscreenOpaqueWindowState);
@@ -5167,11 +5178,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 && mFocusedApp == win.getAppToken()) {
             return 0;
         }
-        if (wasCleared && !mClearedBecauseOfForceShow
-                && (visibility & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) != 0) {
-            mNavigationBarController.showTransient();
-            visibility |= View.NAVIGATION_BAR_TRANSIENT;
-        }
+
         final int visibility2 = visibility;
         mLastSystemUiFlags = visibility;
         mLastFocusNeedsMenu = needsMenu;
@@ -5276,7 +5283,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
     }
 
-    private boolean isImmersiveMode(int vis) {
+    public boolean isImmersiveMode(int vis) {
         final int flags = View.SYSTEM_UI_FLAG_IMMERSIVE | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
         return mNavigationBar != null
                 && (vis & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) != 0
