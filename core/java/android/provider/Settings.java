@@ -4456,6 +4456,13 @@ public final class Settings {
         public static final String PAYMENT_SERVICE_SEARCH_URI = "payment_service_search_uri";
 
         /**
+         * Device hostname
+         *
+         * @hide
+         */
+        public static final String DEVICE_HOSTNAME = "device_hostname";
+
+        /**
          * Whether to allow killing of the foreground app by long-pressing the Back button
          * @hide
          */
