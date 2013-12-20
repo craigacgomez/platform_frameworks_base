@@ -4549,4 +4549,7 @@
     <string name="global_actions_expanded_desktop_mode_on_status">Enabled</string>
     <!-- status message in phone options dialog for when expand desktop mode is off -->
     <string name="global_actions_expanded_desktop_mode_off_status">Disabled</string>
+
+    <!-- Back long-press kill -->
+    <string name="app_killed_message">Application killed</string>
 </resources>
