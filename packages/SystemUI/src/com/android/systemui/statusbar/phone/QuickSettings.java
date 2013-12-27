@@ -25,6 +25,7 @@ import android.app.admin.DevicePolicyManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -113,6 +114,8 @@ class QuickSettings {
     private Handler mHandler;
 
     private BatteryMeterView mBattery;
+
+    private final String ACTION_EXPANDED_DESKTOP_STATE_CHANGED = "ACTION_EXPANDED_DESKTOP_STATE_CHANGED";
 
     // The set of QuickSettingsTiles that have dynamic spans (and need to be updated on
     // configuration change)
@@ -657,6 +660,108 @@ class QuickSettings {
                 }
             });
         parent.addView(locationTile);
+
+        // Expanded desktop
+        final QuickSettingsBasicTile expandedDesktopTile
+                = new QuickSettingsBasicTile(mContext);
+        expandedDesktopTile.setImageResource(R.drawable.ic_qs_expanded_desktop_off);
+        expandedDesktopTile.setTextResource(R.string.quick_settings_expanded_desktop_label);
+        expandedDesktopTile.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                startSettingsActivity(android.provider.Settings.ACTION_DISPLAY_SETTINGS);
+                return true; // Consume click
+            }
+        });
+        expandedDesktopTile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mModel.setExpandedDesktopState();
+                mContext.sendBroadcast(new Intent(ACTION_EXPANDED_DESKTOP_STATE_CHANGED));
+                mBar.collapseAllPanels(true);
+            }
+        });
+        mModel.addExpandedDesktopTile(expandedDesktopTile, new QuickSettingsModel.RefreshCallback() {
+            @Override
+            public void refreshView(QuickSettingsTileView unused, State state) {
+                expandedDesktopTile.setImageResource(state.iconId);
+
+                String expandedDesktopState = mContext.getString(
+                        (state.enabled) ? R.string.accessibility_desc_on
+                                : R.string.accessibility_desc_off);
+                expandedDesktopTile.setContentDescription(
+                        mContext.getString(R.string.accessibility_quick_settings_expanded_desktop, expandedDesktopState));
+                expandedDesktopTile.setText(state.label);
+            }
+        });
+        parent.addView(expandedDesktopTile);
+
+        // Sync
+        final QuickSettingsBasicTile syncTile
+                = new QuickSettingsBasicTile(mContext);
+        syncTile.setImageResource(R.drawable.ic_qs_sync_on);
+        syncTile.setTextResource(R.string.quick_settings_sync_label);
+        syncTile.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Intent syncIntent = new Intent("android.settings.SYNC_SETTINGS");
+                syncIntent.addCategory(Intent.CATEGORY_DEFAULT);
+                syncIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startSettingsActivity(syncIntent);
+                return true; // Consume click
+            }
+        });
+        syncTile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mModel.setSyncState();
+                Intent intent = new Intent(Intent.ACTION_SYNC_STATE_CHANGED);
+                intent.putExtra("state", ContentResolver.getMasterSyncAutomatically());
+                mContext.sendBroadcast(intent);
+            }
+        });
+        mModel.addSyncTile(syncTile, new QuickSettingsModel.RefreshCallback() {
+            @Override
+            public void refreshView(QuickSettingsTileView unused, State state) {
+                syncTile.setImageResource(state.iconId);
+
+                String syncState = mContext.getString(
+                        (state.enabled) ? R.string.accessibility_desc_on
+                                : R.string.accessibility_desc_off);
+                syncTile.setContentDescription(
+                        mContext.getString(R.string.accessibility_quick_settings_sync, syncState));
+                syncTile.setText(state.label);
+            }
+        });
+        parent.addView(syncTile);
+
+        final QuickSettingsBasicTile ringerModeTile
+                = new QuickSettingsBasicTile(mContext);
+        ringerModeTile.setImageResource(R.drawable.ic_qs_ringer_mode_normal);
+        ringerModeTile.setTextResource(R.string.quick_settings_ringer_mode_normal_label);
+        ringerModeTile.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                startSettingsActivity(android.provider.Settings.ACTION_SOUND_SETTINGS);
+                return true; // Consume click
+            }
+        });
+        ringerModeTile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mModel.setRingerMode();
+            }
+        });
+        mModel.addRingerModeTile(ringerModeTile, new QuickSettingsModel.RefreshCallback() {
+            @Override
+            public void refreshView(QuickSettingsTileView unused, State state) {
+                ringerModeTile.setImageResource(state.iconId);
+                ringerModeTile.setContentDescription(
+                        mContext.getString(R.string.accessibility_quick_settings_ringer_mode));
+                ringerModeTile.setText(state.label);
+            }
+        });
+        parent.addView(ringerModeTile);
     }
 
     private void addTemporaryTiles(final ViewGroup parent, final LayoutInflater inflater) {

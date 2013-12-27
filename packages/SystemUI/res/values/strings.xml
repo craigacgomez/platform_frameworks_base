@@ -512,4 +512,18 @@
     <string name="quick_settings_location_label_sensors_only">Sensors Only</string>
     <string name="quick_settings_location_label_battery_saving">Battery Saving</string>
 
+    <!-- Content description of the expanded desktop tile in quick settings (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_expanded_desktop">Expanded Desktop <xliff:g id="state" example="Off">%s</xliff:g>.</string>
+    <string name="quick_settings_expanded_desktop_label">Expanded Desktop</string>
+
+    <!-- Content description of the sync tile in quick settings (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_sync">Sync <xliff:g id="state" example="Off">%s</xliff:g>.</string>
+    <string name="quick_settings_sync_label">Sync</string>
+
+    <!-- Content description of the sync tile in quick settings (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_ringer_mode">Ringer Mode</string>
+    <string name="quick_settings_ringer_mode_normal_label">Normal</string>
+    <string name="quick_settings_ringer_mode_vibrate_label">Vibrate</string>
+    <string name="quick_settings_ringer_mode_silent_label">Silent</string>
+
 </resources>

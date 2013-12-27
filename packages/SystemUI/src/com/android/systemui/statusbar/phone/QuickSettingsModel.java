@@ -27,6 +27,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.ContentObserver;
 import android.graphics.drawable.Drawable;
+import android.media.AudioManager;
 import android.media.MediaRouter;
 import android.media.MediaRouter.RouteInfo;
 import android.net.ConnectivityManager;
@@ -101,6 +102,9 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     public static class RotationLockState extends State {
         boolean visible = false;
     }
+    static class RingerModeState extends State {
+        int mode;
+    }
 
     /** The callback to update a given tile. */
     interface RefreshCallback {
@@ -140,6 +144,20 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
             if (action.equals(Intent.ACTION_ALARM_CHANGED)) {
                 onAlarmChanged(intent);
                 onNextAlarmChanged();
+            }
+        }
+    };
+
+    private BroadcastReceiver mTileReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(ACTION_EXPANDED_DESKTOP_STATE_CHANGED)) {
+                onExpandedDesktopStateChanged(mExpandedDesktopState.enabled);
+            } else if (action.equals(Intent.ACTION_SYNC_STATE_CHANGED)) {
+                onSyncStateChanged(mSyncState.enabled);
+            } else if (intent.getAction().equals(AudioManager.RINGER_MODE_CHANGED_ACTION)) {
+                onRingerModeChanged(mRingerModeState.mode);
             }
         }
     };
@@ -278,6 +296,18 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     private RefreshCallback mLocationCallback;
     private LocationState mLocationState = new LocationState();
 
+    private QuickSettingsTileView mExpandedDesktopTile;
+    private RefreshCallback mExpandedDesktopCallback;
+    private State mExpandedDesktopState = new State();
+
+    private QuickSettingsTileView mSyncTile;
+    private RefreshCallback mSyncCallback;
+    private State mSyncState = new State();
+
+    private QuickSettingsTileView mRingerModeTile;
+    private RefreshCallback mRingerModeCallback;
+    private RingerModeState mRingerModeState = new RingerModeState();
+
     private QuickSettingsTileView mImeTile;
     private RefreshCallback mImeCallback = null;
     private State mImeState = new State();
@@ -303,6 +333,8 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     private State mSslCaCertWarningState = new State();
 
     private RotationLockController mRotationLockController;
+
+    private final String ACTION_EXPANDED_DESKTOP_STATE_CHANGED = "ACTION_EXPANDED_DESKTOP_STATE_CHANGED";
 
     public QuickSettingsModel(Context context) {
         mContext = context;
@@ -338,6 +370,12 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         IntentFilter alarmIntentFilter = new IntentFilter();
         alarmIntentFilter.addAction(Intent.ACTION_ALARM_CHANGED);
         context.registerReceiver(mAlarmIntentReceiver, alarmIntentFilter);
+
+        IntentFilter tileFilter = new IntentFilter();
+        tileFilter.addAction(ACTION_EXPANDED_DESKTOP_STATE_CHANGED);
+        tileFilter.addAction(Intent.ACTION_SYNC_STATE_CHANGED);
+        tileFilter.addAction(AudioManager.RINGER_MODE_CHANGED_ACTION);
+        context.registerReceiver(mTileReceiver, tileFilter);
     }
 
     void updateResources() {
@@ -348,6 +386,9 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         refreshRotationLockTile();
         refreshRssiTile();
         refreshLocationTile();
+        refreshExpandedDesktopTile();
+        refreshSyncTile();
+        refreshRingerModeTile();
     }
 
     // Settings
@@ -648,6 +689,117 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         mLocationState.iconId = locationIconId;
         mLocationState.mode = mode;
         mLocationCallback.refreshView(mLocationTile, mLocationState);
+    }
+
+    // Expanded Desktop
+    void addExpandedDesktopTile(QuickSettingsTileView view, RefreshCallback cb) {
+        mExpandedDesktopTile = view;
+        mExpandedDesktopCallback = cb;
+        int expandedDesktopState = Settings.System.getIntForUser(mContext.getContentResolver(),
+                    Settings.System.EXPANDED_DESKTOP_STATE, 0, UserHandle.USER_CURRENT);
+        onExpandedDesktopStateChanged(expandedDesktopState != 0);
+    }
+    public void setExpandedDesktopState() {
+        // Change the system setting
+        Settings.System.putIntForUser(
+                mContext.getContentResolver(),
+                Settings.System.EXPANDED_DESKTOP_STATE,
+                !mExpandedDesktopState.enabled ? 1 : 0, UserHandle.USER_CURRENT);
+        onExpandedDesktopStateChanged(!mExpandedDesktopState.enabled);
+    }
+    // callback
+    public void onExpandedDesktopStateChanged(boolean enabled) {;
+        Resources r = mContext.getResources();
+        mExpandedDesktopState.enabled = enabled;
+        mExpandedDesktopState.iconId = (enabled ?
+                R.drawable.ic_qs_expanded_desktop_on :
+                R.drawable.ic_qs_expanded_desktop_off);
+        mExpandedDesktopState.label = r.getString(R.string.quick_settings_expanded_desktop_label);
+        mExpandedDesktopCallback.refreshView(mExpandedDesktopTile, mExpandedDesktopState);
+    }
+    void refreshExpandedDesktopTile() {
+        if (mExpandedDesktopTile != null) {
+            onExpandedDesktopStateChanged(mExpandedDesktopState.enabled);
+        }
+    }
+
+    // Sync
+    void addSyncTile(QuickSettingsTileView view, RefreshCallback cb) {
+        mSyncTile = view;
+        mSyncCallback = cb;
+        onSyncStateChanged(ContentResolver.getMasterSyncAutomatically());
+    }
+    public void setSyncState() {
+        // Change the sync state
+        ContentResolver.setMasterSyncAutomatically(!ContentResolver.getMasterSyncAutomatically());
+        onSyncStateChanged(ContentResolver.getMasterSyncAutomatically());
+    }
+    // callback
+    public void onSyncStateChanged(boolean enabled) {;
+        Resources r = mContext.getResources();
+        mSyncState.enabled = enabled;
+        mSyncState.iconId = (enabled ?
+                R.drawable.ic_qs_sync_on :
+                R.drawable.ic_qs_sync_off);
+        mSyncState.label = r.getString(R.string.quick_settings_sync_label);
+        mSyncCallback.refreshView(mSyncTile, mSyncState);
+    }
+    void refreshSyncTile() {
+        if (mSyncTile != null) {
+            onSyncStateChanged(mSyncState.enabled);
+        }
+    }
+
+    // Ringer Mode
+    void addRingerModeTile(QuickSettingsTileView view, RefreshCallback cb) {
+        mRingerModeTile = view;
+        mRingerModeCallback = cb;
+        AudioManager audioManager = (AudioManager) mContext
+                            .getSystemService(Context.AUDIO_SERVICE);
+        onRingerModeChanged(audioManager.getRingerMode());
+    }
+    public void setRingerMode() {
+        // Change the ringer mode
+        AudioManager audioManager = (AudioManager) mContext
+                            .getSystemService(Context.AUDIO_SERVICE);
+        switch (audioManager.getRingerMode()) {
+            case AudioManager.RINGER_MODE_NORMAL:
+                audioManager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+                break;
+            case AudioManager.RINGER_MODE_VIBRATE:
+                audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+                break;
+            case AudioManager.RINGER_MODE_SILENT:
+                audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+                break;
+        }
+        onRingerModeChanged(audioManager.getRingerMode());
+    }
+    // callback
+    public void onRingerModeChanged(int mode) {
+        int textResId = R.string.quick_settings_ringer_mode_normal_label;
+        int ringerModeIconId = R.drawable.ic_qs_ringer_mode_normal;
+        if (mode == AudioManager.RINGER_MODE_NORMAL) {
+            textResId = R.string.quick_settings_ringer_mode_normal_label;
+            ringerModeIconId = R.drawable.ic_qs_ringer_mode_normal;
+        } else if (mode == AudioManager.RINGER_MODE_VIBRATE) {
+            textResId = R.string.quick_settings_ringer_mode_vibrate_label;
+            ringerModeIconId = R.drawable.ic_qs_ringer_mode_vibrate;
+        } else if (mode == AudioManager.RINGER_MODE_SILENT) {
+            textResId = R.string.quick_settings_ringer_mode_silent_label;
+            ringerModeIconId = R.drawable.ic_qs_ringer_mode_silent;
+        }
+        String label = mContext.getText(textResId).toString();
+        mRingerModeState.enabled = true;
+        mRingerModeState.label = label;
+        mRingerModeState.iconId = ringerModeIconId;
+        mRingerModeState.mode = mode;
+        mRingerModeCallback.refreshView(mRingerModeTile, mRingerModeState);
+    }
+    void refreshRingerModeTile() {
+        if (mRingerModeTile != null) {
+            onRingerModeChanged(mRingerModeState.mode);
+        }
     }
 
     // Bug report

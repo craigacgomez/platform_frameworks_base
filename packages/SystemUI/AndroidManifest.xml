@@ -77,6 +77,11 @@
     <!-- Superuser -->
     <uses-permission android:name="android.permission.ACCESS_SUPERUSER" />
 
+    <!-- Sync -->
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+
     <application
         android:persistent="true"
         android:allowClearUserData="false"
