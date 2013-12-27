@@ -153,11 +153,15 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action.equals(ACTION_EXPANDED_DESKTOP_STATE_CHANGED)) {
-                onExpandedDesktopStateChanged(mExpandedDesktopState.enabled);
+                int expandedDesktopState = Settings.System.getIntForUser(mContext.getContentResolver(),
+                        Settings.System.EXPANDED_DESKTOP_STATE, 0, UserHandle.USER_CURRENT);
+                onExpandedDesktopStateChanged(expandedDesktopState != 0);
             } else if (action.equals(Intent.ACTION_SYNC_STATE_CHANGED)) {
-                onSyncStateChanged(mSyncState.enabled);
+                onSyncStateChanged(ContentResolver.getMasterSyncAutomatically());
             } else if (intent.getAction().equals(AudioManager.RINGER_MODE_CHANGED_ACTION)) {
-                onRingerModeChanged(mRingerModeState.mode);
+                AudioManager audioManager = (AudioManager) mContext
+                                .getSystemService(Context.AUDIO_SERVICE);
+                onRingerModeChanged(audioManager.getRingerMode());
             }
         }
     };

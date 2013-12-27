@@ -105,6 +105,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private boolean mHasVibrator;
     private final boolean mShowSilentToggle;
 
+    private final String ACTION_EXPANDED_DESKTOP_STATE_CHANGED = "ACTION_EXPANDED_DESKTOP_STATE_CHANGED";
+
     /**
      * @param context everything needs a context :(
      */
@@ -991,6 +993,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 mContext.getContentResolver(),
                 Settings.System.EXPANDED_DESKTOP_STATE,
                 on ? 1 : 0, UserHandle.USER_CURRENT);
+        mContext.sendBroadcast(new Intent(ACTION_EXPANDED_DESKTOP_STATE_CHANGED));
     }
 
     private static final class GlobalActionsDialog extends Dialog implements DialogInterface {
