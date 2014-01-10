@@ -678,16 +678,19 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     public void onLocationSettingsChanged(boolean locationEnabled, int mode) {
         int textResId = locationEnabled ? R.string.quick_settings_location_label
                 : R.string.quick_settings_location_off_label;
-        if (mode == Settings.Secure.LOCATION_MODE_HIGH_ACCURACY) {
-            textResId = R.string.quick_settings_location_label_high_accuracy;
-        } else if (mode == Settings.Secure.LOCATION_MODE_SENSORS_ONLY) {
-            textResId = R.string.quick_settings_location_label_sensors_only;
-        } else if (mode == Settings.Secure.LOCATION_MODE_BATTERY_SAVING) {
-            textResId = R.string.quick_settings_location_label_battery_saving;
-        }
-        String label = mContext.getText(textResId).toString();
         int locationIconId = locationEnabled
                 ? R.drawable.ic_qs_location_on : R.drawable.ic_qs_location_off;
+        if (mode == Settings.Secure.LOCATION_MODE_HIGH_ACCURACY) {
+            textResId = R.string.quick_settings_location_label_high_accuracy;
+            locationIconId = R.drawable.ic_qs_location_on;
+        } else if (mode == Settings.Secure.LOCATION_MODE_SENSORS_ONLY) {
+            textResId = R.string.quick_settings_location_label_sensors_only;
+            locationIconId = R.drawable.ic_qs_location_on_gps;
+        } else if (mode == Settings.Secure.LOCATION_MODE_BATTERY_SAVING) {
+            textResId = R.string.quick_settings_location_label_battery_saving;
+            locationIconId = R.drawable.ic_qs_location_on_wifi;
+        }
+        String label = mContext.getText(textResId).toString();
         mLocationState.enabled = locationEnabled;
         mLocationState.label = label;
         mLocationState.iconId = locationIconId;
