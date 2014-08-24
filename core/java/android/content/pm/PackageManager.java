@@ -3174,6 +3174,22 @@ public abstract class PackageManager {
             UserHandle userHandle);
 
     /**
+     * @param packageName
+     * @return
+     *
+     * @hide
+     */
+    public abstract boolean getHeadsUpSetting(String packageName);
+
+    /**
+     * @param packageName
+     * @param enabled
+     *
+     * @hide
+     */
+    public abstract void setHeadsUpSetting(String packageName, boolean enabled);
+
+    /**
      * Return whether the device has been booted into safe mode.
      */
     public abstract boolean isSafeMode();

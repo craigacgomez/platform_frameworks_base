@@ -67,7 +67,6 @@ public class Notification implements Parcelable
      * Use the default notification sound. This will ignore any given
      * {@link #sound}.
      *
-
      * @see #defaults
      */
 
@@ -323,7 +322,6 @@ public class Notification implements Parcelable
      * Bit to be bitwise-ored into the {@link #flags} field that should be
      * set if the notification should be canceled when it is clicked by the
      * user.
-
      */
     public static final int FLAG_AUTO_CANCEL        = 0x00000010;
 
@@ -561,13 +559,13 @@ public class Notification implements Parcelable
     public static final String EXTRA_AS_HEADS_UP = "headsup";
 
     /**
-     * Value for {@link #EXTRA_AS_HEADS_UP}.
+     * Default value for {@link #EXTRA_AS_HEADS_UP}.
      * @hide
      */
     public static final int HEADS_UP_NEVER = 0;
 
     /**
-     * Default value for {@link #EXTRA_AS_HEADS_UP}.
+     * Value for {@link #EXTRA_AS_HEADS_UP}.
      * @hide
      */
     public static final int HEADS_UP_ALLOWED = 1;
@@ -577,6 +575,24 @@ public class Notification implements Parcelable
      * @hide
      */
     public static final int HEADS_UP_REQUESTED = 2;
+
+     /**
+     * Not used.
+     * @hide
+     */
+    public static final String EXTRA_HEADS_UP_EXPANDED = "headsupExpanded";
+
+    /**
+     * Value for {@link #EXTRA_HEADS_UP_EXPANDED}.
+     * @hide
+     */
+    public static final int HEADS_UP_EXPANDED = 0;
+
+    /**
+     * Default value for {@link #EXTRA_HEADS_UP_EXPANDED}.
+     * @hide
+     */
+    public static final int HEADS_UP_NOT_EXPANDED = 1;
 
     /**
      * Structure to encapsulate a named action that can be shown as part of this notification.
@@ -600,7 +616,7 @@ public class Notification implements Parcelable
          * may be rendered in a disabled presentation by the system UI.
          */
         public PendingIntent actionIntent;
- 
+
         private Action() { }
         private Action(Parcel in) {
             icon = in.readInt();
@@ -1176,7 +1192,6 @@ public class Notification implements Parcelable
         /**
          * Constructs a new Builder with the defaults:
          *
-
          * <table>
          * <tr><th align=right>priority</th>
          *     <td>{@link #PRIORITY_DEFAULT}</td></tr>
@@ -1186,7 +1201,6 @@ public class Notification implements Parcelable
          *     <td>{@link #STREAM_DEFAULT}</td></tr>
          * </table>
          *
-
          * @param context
          *            A {@link Context} that will be used by the Builder to construct the
          *            RemoteViews. The Context will not be held past the lifetime of this Builder
@@ -1242,12 +1256,10 @@ public class Notification implements Parcelable
          * Set the small icon resource, which will be used to represent the notification in the
          * status bar.
          *
-
          * The platform template for the expanded view will draw this icon in the left, unless a
          * {@link #setLargeIcon(Bitmap) large icon} has also been specified, in which case the small
          * icon will be moved to the right-hand side.
          *
-
          * @param icon
          *            A resource ID in the application's package of the drawable to use.
          * @see Notification#icon
@@ -1457,11 +1469,9 @@ public class Notification implements Parcelable
         /**
          * Set the vibration pattern to use.
          *
-
          * See {@link android.os.Vibrator#vibrate(long[], int)} for a discussion of the
          * <code>pattern</code> parameter.
          *
-
          * @see Notification#vibrate
          */
         public Builder setVibrate(long[] pattern) {
@@ -1473,10 +1483,8 @@ public class Notification implements Parcelable
          * Set the desired color for the indicator LED on the device, as well as the
          * blink duty cycle (specified in milliseconds).
          *
-
          * Not all devices will honor all (or even any) of these values.
          *
-
          * @see Notification#ledARGB
          * @see Notification#ledOnMS
          * @see Notification#ledOffMS
@@ -1491,16 +1499,13 @@ public class Notification implements Parcelable
         /**
          * Set whether this is an "ongoing" notification.
          *
-
          * Ongoing notifications cannot be dismissed by the user, so your application or service
          * must take care of canceling them.
          *
-
          * They are typically used to indicate a background task that the user is actively engaged
          * with (e.g., playing music) or is pending in some way and therefore occupying the device
          * (e.g., a file download, sync operation, active network connection).
          *
-
          * @see Notification#FLAG_ONGOING_EVENT
          * @see Service#setForeground(boolean)
          */
@@ -1780,9 +1785,7 @@ public class Notification implements Parcelable
                               : R.layout.notification_action);
             button.setTextViewCompoundDrawablesRelative(R.id.action0, action.icon, 0, 0, 0);
             button.setTextViewText(R.id.action0, action.title);
-            if (!tombstone) {
-                button.setOnClickPendingIntent(R.id.action0, action.actionIntent);
-            }
+            button.setOnClickPendingIntent(R.id.action0, action.actionIntent, tombstone);
             button.setContentDescription(R.id.action0, action.title);
             return button;
         }

@@ -261,7 +261,7 @@ public class StatusBarManagerService extends IStatusBarService.Stub
         }
     }
 
-    /** 
+    /**
      * Hide or show the on-screen Menu key. Only call this from the window manager, typically in
      * response to a window with FLAG_NEEDS_MENU_KEY set.
      */
@@ -364,6 +364,33 @@ public class StatusBarManagerService extends IStatusBarService.Stub
                 }
             }
         });
+    }
+
+    @Override
+    public void hideHeadsUp() {
+        if (mBar != null) {
+            try {
+                mBar.hideHeadsUp();
+            } catch (RemoteException ex) {}
+        }
+    }
+
+    @Override
+    public void hideHeadsUpCandidate(String packageName) {
+        if (mBar != null) {
+            try {
+                mBar.hideHeadsUpCandidate(packageName);
+            } catch (RemoteException ex) {}
+        }
+    }
+
+    @Override
+    public void updateHeadsUpPosition(boolean statusBarShows) {
+        if (mBar != null) {
+            try {
+                mBar.updateHeadsUpPosition(statusBarShows);
+            } catch (RemoteException ex) {}
+        }
     }
 
     @Override
