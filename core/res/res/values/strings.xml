@@ -4886,4 +4886,7 @@
 
     <!-- Zen mode condition: no exit criteria. [CHAR LIMIT=NONE] -->
     <string name="zen_mode_forever">Indefinitely</string>
+
+    <!-- Back button long-press kill -->
+    <string name="app_killed_message">Application killed</string>
 </resources>
