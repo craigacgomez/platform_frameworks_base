@@ -2085,4 +2085,7 @@
   <java-symbol type="array" name="shutdown_reboot_options" />
   <java-symbol type="array" name="shutdown_reboot_actions" />
   <java-symbol type="drawable" name="ic_lock_settings" />
+
+  <!-- Movable navigation bar -->
+  <java-symbol type="bool" name="config_hasMovableNavigationBar" />
 </resources>

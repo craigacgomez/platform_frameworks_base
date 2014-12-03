@@ -6613,6 +6613,12 @@ public final class Settings {
         public static final String REQUIRE_PASSWORD_TO_DECRYPT = "require_password_to_decrypt";
 
         /**
+         * Navigation bar position
+         * @hide
+         */
+        public static final String NAV_BAR_POSITION = "nav_bar_position";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
