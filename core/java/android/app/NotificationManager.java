@@ -268,14 +268,26 @@ public class NotificationManager
     /**
      * @hide
      */
-    public int getShowNotificationForPackageOnKeyguard(String pkg, int uid) {
+    public boolean isSystemConditionProviderEnabled(String path) {
+        INotificationManager service = getService();
+        try {
+            return service.isSystemConditionProviderEnabled(path);
+        } catch (RemoteException e) {
+            return false;
+        }
+    }
+	
+	/**
+     * @hide
+     */
+	public int getShowNotificationForPackageOnKeyguard(String pkg, int uid) {
         INotificationManager service = getService();
         try {
             return getService().getShowNotificationForPackageOnKeyguard(pkg, uid);
         } catch (RemoteException e) {
             return Notification.SHOW_ALL_NOTI_ON_KEYGUARD;
-        }
-    }
+		}
+	}
 
     private Context mContext;
 }

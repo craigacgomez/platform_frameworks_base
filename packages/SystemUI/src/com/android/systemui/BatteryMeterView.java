@@ -237,8 +237,6 @@ public class BatteryMeterView extends View implements DemoMode,
         levels.recycle();
         colors.recycle();
         atts.recycle();
-//        mShowPercent = ENABLE_PERCENT && 0 != Settings.System.getInt(
-//              context.getContentResolver(), "status_bar_show_battery_percent", 0);
         mWarningString = context.getString(R.string.battery_meter_very_low_overlay_symbol);
         mCriticalLevel = mContext.getResources().getInteger(
                 com.android.internal.R.integer.config_criticalBatteryWarningLevel);
