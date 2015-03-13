@@ -68,6 +68,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
     ArrayList<TaskStack> mStacks;
     View mSearchBar;
     RecentsViewCallbacks mCb;
+    View mClearRecents;
 	View mFloatingButton;
 
     public RecentsView(Context context) {
@@ -308,7 +309,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
             FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)
                     mFloatingButton.getLayoutParams();
             params.topMargin = taskStackBounds.top;
-            params.gravity = Gravity.BOTTOM | Gravity.RIGHT;
+            params.gravity = Gravity.TOP | Gravity.RIGHT;
             mFloatingButton.setLayoutParams(params);
         } else {
             mFloatingButton.setVisibility(View.GONE);
@@ -340,8 +341,12 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
     protected void onAttachedToWindow () {
         super.onAttachedToWindow();
         mFloatingButton = ((View)getParent()).findViewById(R.id.floating_action_button);
-        mFloatingButton.setOnClickListener(new View.OnClickListener() {
+        mClearRecents = ((View)getParent()).findViewById(R.id.clear_recents);
+        mClearRecents.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                if (mFloatingButton.getAlpha() != 1f) {
+                    return;
+                }
                 dismissAllTasksAnimated();
             }
         });
