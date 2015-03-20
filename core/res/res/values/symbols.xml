@@ -2173,4 +2173,6 @@
 
   <!-- Movable navigation bar -->
   <java-symbol type="bool" name="config_hasMovableNavigationBar" />
+
+  <java-symbol type="string" name="android_installing_apk" />
 </resources>
