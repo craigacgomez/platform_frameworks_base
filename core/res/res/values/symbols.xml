@@ -2175,4 +2175,7 @@
   <java-symbol type="bool" name="config_hasMovableNavigationBar" />
 
   <java-symbol type="string" name="android_installing_apk" />
+
+  <!-- Package Manager -->
+  <java-symbol type="array" name="config_disabledComponents" />
 </resources>

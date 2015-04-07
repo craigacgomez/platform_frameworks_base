@@ -2040,4 +2040,8 @@
     <!-- Movable navigation bar. Default false. Should only be used for large screen devices
          like phablets and tablets. Has no effect on phones -->
     <bool name="config_hasMovableNavigationBar">false</bool>
+
+    <!-- The list of components which should be automatically disabled. -->
+    <string-array name="config_disabledComponents" translatable="false">
+    </string-array>
 </resources>
