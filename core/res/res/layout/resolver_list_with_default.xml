@@ -16,8 +16,6 @@
 * limitations under the License.
 */
 -->
-
-<!-- Text exposed for theming -->
 <com.android.internal.widget.ResolverDrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"

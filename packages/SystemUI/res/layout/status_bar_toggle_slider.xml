@@ -47,7 +47,6 @@
         android:splitTrack="false"
         android:contentDescription="@string/accessibility_brightness"
         />
-    <!-- exposed textcolor for theming -->
     <TextView
         android:id="@+id/label"
         android:layout_width="0dp"
