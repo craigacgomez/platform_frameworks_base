@@ -2320,4 +2320,6 @@
 
   <java-symbol type="drawable" name="platlogo_m" />
 
+  <!-- Movable on-screen navigation bar button -->
+  <java-symbol type="bool" name="config_hasMovableNavigationBar" />
 </resources>

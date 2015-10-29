@@ -7700,6 +7700,14 @@ public final class Settings {
         public static final String LTE_SERVICE_FORCED = "lte_service_forced";
 
         /**
+         * Controls the position of the on-screen navigation bar buttons
+         *<p>
+         * Type: int (of for default/centre, 1 for left, 2 for right)
+         * @hide
+         */
+        public static final String NAV_BAR_POSITION = "nav_bar_position";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
