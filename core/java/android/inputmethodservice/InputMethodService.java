@@ -252,10 +252,29 @@ public class InputMethodService extends AbstractInputMethodService {
      */
     public static final int IME_VISIBLE = 0x2;
 
+    /**
+     * @hide
+     * Volume rocker cursor control is off
+     */
+    public static final int VOLUME_ROCKER_CURSOR_OFF = 0;
+
+    /**
+     * @hide
+     * Volume rocker cursor control is on
+     */
+    public static final int VOLUME_ROCKER_CURSOR_ON = 1;
+
+    /**
+     * @hide
+     * Volume key cursor control is on in reverse mode
+     */
+    public static final int VOLUME_ROCKER_CURSOR_ON_REVERSE = 2;
+
     InputMethodManager mImm;
     
     int mTheme = 0;
     boolean mHardwareAccelerated = false;
+    int mVolumeRockerCursorControl = 0;
     
     LayoutInflater mInflater;
     TypedArray mThemeAttrs;
@@ -1856,6 +1875,28 @@ public class InputMethodService extends AbstractInputMethodService {
             }
             return false;
         }
+        // cursor controls using volume rocker
+        if (event.getKeyCode() == KeyEvent.KEYCODE_VOLUME_UP) {
+            mVolumeRockerCursorControl = Settings.System.getInt(getContentResolver(),
+                    Settings.System.VOLUME_ROCKER_CURSOR_CONTROL, 0);
+            if (isInputViewShown() && (mVolumeRockerCursorControl != VOLUME_ROCKER_CURSOR_OFF)) {
+                sendDownUpKeyEvents((mVolumeRockerCursorControl == VOLUME_ROCKER_CURSOR_ON_REVERSE)
+                        ? KeyEvent.KEYCODE_DPAD_RIGHT : KeyEvent.KEYCODE_DPAD_LEFT);
+                return true;
+            }
+            return false;
+        }
+        // cursor controls using volume rocker
+        if (event.getKeyCode() == KeyEvent.KEYCODE_VOLUME_DOWN) {
+            mVolumeRockerCursorControl = Settings.System.getInt(getContentResolver(),
+                    Settings.System.VOLUME_ROCKER_CURSOR_CONTROL, 0);
+            if (isInputViewShown() && (mVolumeRockerCursorControl != VOLUME_ROCKER_CURSOR_OFF)) {
+                sendDownUpKeyEvents((mVolumeRockerCursorControl == VOLUME_ROCKER_CURSOR_ON_REVERSE)
+                        ? KeyEvent.KEYCODE_DPAD_LEFT : KeyEvent.KEYCODE_DPAD_RIGHT);
+                return true;
+            }
+            return false;
+        }
         return doMovementKey(keyCode, event, MOVEMENT_DOWN);
     }
 
@@ -1905,6 +1946,15 @@ public class InputMethodService extends AbstractInputMethodService {
             if (event.isTracking() && !event.isCanceled()) {
                 return handleBack(true);
             }
+        }
+        if (event.getKeyCode() == KeyEvent.KEYCODE_VOLUME_UP
+                || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+            mVolumeRockerCursorControl = Settings.System.getInt(getContentResolver(),
+                    Settings.System.VOLUME_ROCKER_CURSOR_CONTROL, 0);
+            if (isInputViewShown() && (mVolumeRockerCursorControl != VOLUME_ROCKER_CURSOR_OFF)) {
+                return true;
+            }
+           return false;
         }
         return doMovementKey(keyCode, event, MOVEMENT_UP);
     }
