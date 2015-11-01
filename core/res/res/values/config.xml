@@ -2278,4 +2278,7 @@
     <!-- Timeout in milliseconds for how long you have to long-press the back button to
          kill the foreground app. -->
     <integer name="config_backKillTimeout">2000</integer>
+
+    <!-- Package name providing WebView implementation. (Google Prebuilt) -->
+    <string name="config_prebuiltWebViewPackageName" translatable="false">com.google.android.webview</string>
 </resources>
