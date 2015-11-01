@@ -40,6 +40,8 @@ import com.android.systemui.volume.ZenModePanel;
 
 /** Quick settings tile: Do not disturb **/
 public class DndTile extends QSTile<QSTile.BooleanState> {
+    private static final Intent NOTIFICATION_POLICY_ACCESS_SETTINGS =
+            new Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
 
     private static final Intent ZEN_SETTINGS =
             new Intent(Settings.ACTION_ZEN_MODE_SETTINGS);
@@ -118,6 +120,11 @@ public class DndTile extends QSTile<QSTile.BooleanState> {
             mController.setZen(zen, null, TAG);
             showDetail(true);
         }
+    }
+
+    @Override
+    public void handleLongClick() {
+        mHost.startActivityDismissingKeyguard(NOTIFICATION_POLICY_ACCESS_SETTINGS);
     }
 
     @Override

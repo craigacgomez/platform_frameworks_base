@@ -103,6 +103,12 @@ public class WifiTile extends QSTile<QSTile.SignalState> {
     }
 
     @Override
+    public void handleLongClick() {
+        mHost.startActivityDismissingKeyguard(WIFI_SETTINGS);
+    }
+
+
+    @Override
     protected void handleSecondaryClick() {
         if (!mWifiController.canConfigWifi()) {
             mHost.startActivityDismissingKeyguard(new Intent(Settings.ACTION_WIFI_SETTINGS));

@@ -81,6 +81,11 @@ public class BluetoothTile extends QSTile<QSTile.BooleanState>  {
     }
 
     @Override
+    public void handleLongClick() {
+        mHost.startActivityDismissingKeyguard(BLUETOOTH_SETTINGS);
+    }
+
+    @Override
     protected void handleSecondaryClick() {
         if (!mState.value) {
             mState.value = true;
