@@ -2222,21 +2222,21 @@
     <string name="permdesc_writeHistoryBookmarks" product="tablet">Allows the
         app to modify the Browser\'s history or bookmarks stored on your tablet.
         This may allow the app to erase or modify Browser data.  Note: this
-        permission may note be enforced by third-party browsers or other
+        permission may not be enforced by third-party browsers or other
         applications with web browsing capabilities.</string>
     <!-- Description of an application permission, listed so the user can choose whether
         they want to allow the application to do this. -->
     <string name="permdesc_writeHistoryBookmarks" product="tv">Allows the
         app to modify the Browser\'s history or bookmarks stored on your TV.
         This may allow the app to erase or modify Browser data.  Note: this
-        permission may note be enforced by third-party browsers or other
+        permission may not be enforced by third-party browsers or other
         applications with web browsing capabilities.</string>
     <!-- Description of an application permission, listed so the user can choose whether
         they want to allow the application to do this. -->
     <string name="permdesc_writeHistoryBookmarks" product="default">Allows the
         app to modify the Browser\'s history or bookmarks stored on your phone.
         This may allow the app to erase or modify Browser data.  Note:
-        this permission may note be enforced by third-party browsers or other
+        this permission may not be enforced by third-party browsers or other
         applications with web browsing capabilities.</string>
 
     <!-- Title of an application permission, listed so the user can choose whether
