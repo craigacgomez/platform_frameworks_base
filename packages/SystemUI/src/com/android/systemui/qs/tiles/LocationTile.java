@@ -65,7 +65,16 @@ public class LocationTile extends QSTile<QSTile.BooleanState> {
     protected void handleClick() {
         final boolean wasEnabled = (Boolean) mState.value;
         MetricsLogger.action(mContext, getMetricsCategory(), !wasEnabled);
-        mController.setLocationEnabled(!wasEnabled);
+        final int locationMode = mController.getLocationMode();
+        if (locationMode == Settings.Secure.LOCATION_MODE_HIGH_ACCURACY) {
+            mController.setLocationMode(Settings.Secure.LOCATION_MODE_OFF);
+        } else if (locationMode == Settings.Secure.LOCATION_MODE_BATTERY_SAVING) {
+            mController.setLocationMode(Settings.Secure.LOCATION_MODE_HIGH_ACCURACY);
+        } else if (locationMode == Settings.Secure.LOCATION_MODE_SENSORS_ONLY) {
+            mController.setLocationMode(Settings.Secure.LOCATION_MODE_BATTERY_SAVING);
+        } else if (locationMode == Settings.Secure.LOCATION_MODE_OFF) {
+            mController.setLocationMode(Settings.Secure.LOCATION_MODE_SENSORS_ONLY);
+        }
         mEnable.setAllowAnimation(true);
         mDisable.setAllowAnimation(true);
     }
@@ -78,6 +87,7 @@ public class LocationTile extends QSTile<QSTile.BooleanState> {
     @Override
     protected void handleUpdateState(BooleanState state, Object arg) {
         final boolean locationEnabled =  mController.isLocationEnabled();
+        final int locationMode = mController.getLocationMode();
 
         // Work around for bug 15916487: don't show location tile on top of lock screen. After the
         // bug is fixed, this should be reverted to only hiding it on secure lock screens:
@@ -86,12 +96,26 @@ public class LocationTile extends QSTile<QSTile.BooleanState> {
         state.value = locationEnabled;
         if (locationEnabled) {
             state.icon = mEnable;
-            state.label = mContext.getString(R.string.quick_settings_location_label);
-            state.contentDescription = mContext.getString(
+            if (locationMode == Settings.Secure.LOCATION_MODE_HIGH_ACCURACY) {
+                state.label = mContext.getString(R.string.quick_settings_location_label_high_accuracy);
+                state.contentDescription = mContext.getString(
+                        R.string.accessibility_quick_settings_location_on_high_accuracy);
+            } else if (locationMode == Settings.Secure.LOCATION_MODE_BATTERY_SAVING) {
+                state.label = mContext.getString(R.string.quick_settings_location_label_battery_saving);
+                state.contentDescription = mContext.getString(
+                        R.string.accessibility_quick_settings_location_on_battery_saving);
+            } else if (locationMode == Settings.Secure.LOCATION_MODE_SENSORS_ONLY) {
+                state.label = mContext.getString(R.string.quick_settings_location_label_sensors_only);
+                state.contentDescription = mContext.getString(
+                        R.string.accessibility_quick_settings_location_on_sensors_only);
+            } else {
+                state.label = mContext.getString(R.string.quick_settings_location_label);
+                state.contentDescription = mContext.getString(
                     R.string.accessibility_quick_settings_location_on);
+            }
         } else {
             state.icon = mDisable;
-            state.label = mContext.getString(R.string.quick_settings_location_label);
+            state.label = mContext.getString(R.string.quick_settings_location_off_label);
             state.contentDescription = mContext.getString(
                     R.string.accessibility_quick_settings_location_off);
         }
@@ -105,7 +129,16 @@ public class LocationTile extends QSTile<QSTile.BooleanState> {
     @Override
     protected String composeChangeAnnouncement() {
         if (mState.value) {
-            return mContext.getString(R.string.accessibility_quick_settings_location_changed_on);
+            final int locationMode = mController.getLocationMode();
+            if (locationMode == Settings.Secure.LOCATION_MODE_HIGH_ACCURACY) {
+                return mContext.getString(R.string.accessibility_quick_settings_location_changed_on_high_accuracy);
+            } else if (locationMode == Settings.Secure.LOCATION_MODE_BATTERY_SAVING) {
+                return mContext.getString(R.string.accessibility_quick_settings_location_changed_on_battery_saving);
+            } else if (locationMode == Settings.Secure.LOCATION_MODE_SENSORS_ONLY) {
+                return mContext.getString(R.string.accessibility_quick_settings_location_changed_on_sensors_only);
+            } else {
+                return mContext.getString(R.string.accessibility_quick_settings_location_changed_on);
+            }
         } else {
             return mContext.getString(R.string.accessibility_quick_settings_location_changed_off);
         }
