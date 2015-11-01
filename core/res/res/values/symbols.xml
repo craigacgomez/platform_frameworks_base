@@ -2336,4 +2336,6 @@
   <!-- Back button long-press kill -->
   <java-symbol type="integer" name="config_backKillTimeout" />
   <java-symbol type="string" name="app_killed_message" />
+
+  <java-symbol type="string" name="config_prebuiltWebViewPackageName" />
 </resources>
