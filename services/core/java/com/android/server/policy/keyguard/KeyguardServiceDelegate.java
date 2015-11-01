@@ -30,7 +30,7 @@ import com.android.internal.policy.IKeyguardService;
  */
 public class KeyguardServiceDelegate {
     private static final String TAG = "KeyguardServiceDelegate";
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     protected KeyguardServiceWrapper mKeyguardService;
     private final Context mContext;
