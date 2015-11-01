@@ -29,6 +29,9 @@ import com.android.systemui.statusbar.policy.HotspotController;
 
 /** Quick settings tile: Hotspot **/
 public class HotspotTile extends QSTile<QSTile.BooleanState> {
+    private static final Intent WIRELESS_SETTINGS =
+            new Intent(Settings.ACTION_WIRELESS_SETTINGS);
+
     private final AnimationIcon mEnable =
             new AnimationIcon(R.drawable.ic_hotspot_enable_animation);
     private final AnimationIcon mDisable =
@@ -71,6 +74,11 @@ public class HotspotTile extends QSTile<QSTile.BooleanState> {
         mController.setHotspotEnabled(!isEnabled);
         mEnable.setAllowAnimation(true);
         mDisable.setAllowAnimation(true);
+    }
+
+    @Override
+    public void handleLongClick() {
+        mHost.startActivityDismissingKeyguard(WIRELESS_SETTINGS);
     }
 
     @Override

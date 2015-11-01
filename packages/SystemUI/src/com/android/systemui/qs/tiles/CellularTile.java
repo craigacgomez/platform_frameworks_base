@@ -40,6 +40,8 @@ import com.android.systemui.statusbar.policy.SignalCallbackAdapter;
 public class CellularTile extends QSTile<QSTile.SignalState> {
     private static final Intent CELLULAR_SETTINGS = new Intent().setComponent(new ComponentName(
             "com.android.settings", "com.android.settings.Settings$DataUsageSummaryActivity"));
+    private static final Intent WIRELESS_SETTINGS =
+            new Intent(Settings.ACTION_WIRELESS_SETTINGS);
 
     private final NetworkController mController;
     private final MobileDataController mDataController;
@@ -86,6 +88,11 @@ public class CellularTile extends QSTile<QSTile.SignalState> {
         } else {
             mHost.startActivityDismissingKeyguard(CELLULAR_SETTINGS);
         }
+    }
+
+    @Override
+    public void handleLongClick() {
+        mHost.startActivityDismissingKeyguard(WIRELESS_SETTINGS);
     }
 
     @Override
