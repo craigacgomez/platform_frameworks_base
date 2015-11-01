@@ -2327,4 +2327,8 @@
           Should only be used for large screen devices like phablets and tablets.
           Has no visible effect on phones -->
     <bool name="config_hasMovableNavigationBar">false</bool>
+
+    <!-- Timeout in milliseconds for how long you have to long-press the back button to
+         kill the foreground app. -->
+    <integer name="config_backKillTimeout">2000</integer>
 </resources>

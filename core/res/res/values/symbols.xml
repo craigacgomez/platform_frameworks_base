@@ -2332,4 +2332,8 @@
 
   <!-- Movable on-screen navigation bar button -->
   <java-symbol type="bool" name="config_hasMovableNavigationBar" />
+
+  <!-- Back button long-press kill -->
+  <java-symbol type="integer" name="config_backKillTimeout" />
+  <java-symbol type="string" name="app_killed_message" />
 </resources>

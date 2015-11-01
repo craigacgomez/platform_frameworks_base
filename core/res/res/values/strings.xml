@@ -4106,4 +4106,7 @@
         <item quantity="one"><xliff:g id="count" example="1">%1$d</xliff:g> selected</item>
         <item quantity="other"><xliff:g id="count" example="3">%1$d</xliff:g> selected</item>
     </plurals>
+
+    <!-- Back button long-press kill -->
+    <string name="app_killed_message">Foreground application killed!</string>
 </resources>

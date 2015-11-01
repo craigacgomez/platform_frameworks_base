@@ -5744,6 +5744,12 @@ public final class Settings {
 
 
         /**
+         * Whether to long-pressing the Back button will kill the foreground app
+         * @hide
+         */
+        public static final String KILL_APP_LONGPRESS_BACK = "kill_app_longpress_back";
+
+        /**
          * This are the settings to be backed up.
          *
          * NOTE: Settings are backed up and restored in the order they appear
