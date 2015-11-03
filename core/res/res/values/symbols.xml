@@ -2328,4 +2328,6 @@
   <java-symbol type="string" name="app_killed_message" />
 
   <java-symbol type="string" name="config_prebuiltWebViewPackageName" />
+
+  <java-symbol type="string" name="android_installing_apk" />
 </resources>
