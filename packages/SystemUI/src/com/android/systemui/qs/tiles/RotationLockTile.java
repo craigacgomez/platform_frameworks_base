@@ -19,7 +19,7 @@ package com.android.systemui.qs.tiles;
 import android.content.res.Configuration;
 
 import android.content.Intent;
-import android.provider.Settings
+import android.provider.Settings;
 import com.android.internal.logging.MetricsLogger;
 import com.android.systemui.R;
 import com.android.systemui.qs.QSTile;
