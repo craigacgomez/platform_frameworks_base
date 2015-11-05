@@ -21,6 +21,7 @@ import android.app.ActivityManagerNative;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.IActivityManager;
+import android.app.KeyguardManager;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.IBluetoothManager;
@@ -46,6 +47,7 @@ import android.os.storage.IMountService;
 import android.os.storage.IMountShutdownObserver;
 import android.system.ErrnoException;
 import android.system.Os;
+import android.widget.ListView;
 
 import com.android.internal.telephony.ITelephony;
 import com.android.server.pm.PackageManagerService;
@@ -174,7 +176,39 @@ public final class ShutdownThread extends Thread {
             sConfirmDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
             sConfirmDialog.show();
         } else {
-            beginShutdownSequence(context);
+            if (mReboot && hasAdvancedReboot(context) && !mRebootSafeMode) {
+                final CloseDialogReceiver closer = new CloseDialogReceiver(context);
+                if (sConfirmDialog != null) {
+                    sConfirmDialog.dismiss();
+                }
+                sConfirmDialog = new AlertDialog.Builder(context)
+                        .setTitle(com.android.internal.R.string.reboot_title)
+                        .setSingleChoiceItems(com.android.internal.R.array.reboot_options, 0, null)
+                        .setPositiveButton(com.android.internal.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                ListView reasonsList = ((AlertDialog)dialog).getListView();
+                                int selected = reasonsList.getCheckedItemPosition();
+                                Log.d(TAG, "which = " + which);
+                                Log.d(TAG, "selected = " + selected);
+                                if (selected != ListView.INVALID_POSITION) {
+                                    String actions[] = context.getResources().getStringArray(
+                                            com.android.internal.R.array.reboot_actions);
+                                    if (selected >= 0 && selected < actions.length) {
+                                        mRebootReason = actions[selected];
+                                    }
+                                }
+                                beginShutdownSequence(context);
+                            }
+                        })
+                        .setNegativeButton(com.android.internal.R.string.no, null)
+                        .create();
+                closer.dialog = sConfirmDialog;
+                sConfirmDialog.setOnDismissListener(closer);
+                sConfirmDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
+                sConfirmDialog.show();
+            } else {
+                beginShutdownSequence(context);
+            }
         }
     }
 
@@ -236,6 +270,14 @@ public final class ShutdownThread extends Thread {
         shutdownInner(context, confirm);
     }
 
+    private static boolean hasAdvancedReboot(final Context context) {
+        KeyguardManager keyguardManager = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
+        boolean deviceLocked = keyguardManager.inKeyguardRestrictedInputMode();
+        boolean isPrimaryUser = UserHandle.getCallingUserId() == UserHandle.USER_OWNER;
+
+        return !deviceLocked && isPrimaryUser;
+    }
+
     private static void beginShutdownSequence(Context context) {
         synchronized (sIsStartedGuard) {
             if (sIsStarted) {
@@ -272,12 +314,15 @@ public final class ShutdownThread extends Thread {
                 pd.setProgress(0);
                 pd.setIndeterminate(false);
             } else {
-                // Factory reset path. Set the dialog message accordingly.
-                pd.setTitle(context.getText(com.android.internal.R.string.reboot_to_reset_title));
+                pd.setTitle(context.getText(com.android.internal.R.string.reboot_title));
                 pd.setMessage(context.getText(
                         com.android.internal.R.string.reboot_to_reset_message));
                 pd.setIndeterminate(true);
             }
+        } else if (mReboot) {
+            pd.setTitle(context.getText(com.android.internal.R.string.reboot_title));
+            pd.setMessage(context.getText(com.android.internal.R.string.reboot_to_reset_message));
+            pd.setIndeterminate(true);
         } else {
             pd.setTitle(context.getText(com.android.internal.R.string.power_off));
             pd.setMessage(context.getText(com.android.internal.R.string.shutdown_progress));
